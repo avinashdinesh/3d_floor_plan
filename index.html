@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Floor Plan Editor</title>
+<style>
+body { margin: 0; }
+.toolbar {
+    width: 210px;
+    background: #f4f4f4;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 15px;
+    height: 600px; /* Reduce height */
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden;
+}
+
+/* Scrollbar styling */
+.toolbar::-webkit-scrollbar {
+    width: 8px;
+}
+.toolbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+.toolbar::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+.toolbar::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+    
+    .toolbar h2 {
+        margin-bottom: 15px;
+    }
+    .toolbar input {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    .toolbar button {
+        background: #ddd;
+        color: black;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+        width: 100%;
+        border-radius: 5px;
+    }
+    .toolbar button:hover {
+        background: #bbb;
+    }
+.furniture-toolbar {
+    position: fixed;
+    top: 50px;
+    left: 40px;
+    background: white;
+    height: 750px;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    max-height: calc(100vh - 40px); /* Limit height to viewport minus margins */
+    overflow-y: auto; /* Add vertical scrollbar when needed */
+    overflow-x: hidden; /* Hide horizontal scrollbar */
+}
+.furniture-item {
+    padding: 10px;
+    margin: 5px;
+    background: #f0f0f0;
+    border-radius: 3px;
+    cursor: move;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+#clear-furniture {
+    position: fixed;
+    bottom: 40px;
+    right: 30px;
+    padding: 10px 20px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+.furniture-item img {
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+}
+#floorplan-input {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    padding: 10px;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+/* Add scrollbar styling for better visibility */
+.furniture-toolbar::-webkit-scrollbar {
+    width: 8px;
+}
+.furniture-toolbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+.furniture-toolbar::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+.furniture-toolbar::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+</style>
+</head>
+<body>
+<input id="floorplan-input" type="file" accept="image/*" />
+<div id="canvas-container"></div>
+<button id="clear-furniture">Clear Furniture</button>
+<div class="furniture-toolbar">
+    <div class="furniture-item" data-type="bed" draggable="true">
+        <img src="icons/bed.jpg" alt="Bed">
+        Bed
+    </div>
+    <div class="furniture-item" data-type="bed1" draggable="true">
+        <img src="icons/bed1.png" alt="Bed 1">
+        Bed 1
+    </div>
+    <div class="furniture-item" data-type="sofa" draggable="true">
+        <img src="icons/sofa.jpg" alt="Sofa">
+        Sofa
+    </div>
+    <div class="furniture-item" data-type="sofa1" draggable="true">
+        <img src="icons/sofa1.png" alt="Sofa 1">
+        Sofa 1
+    </div>
+    <div class="furniture-item" data-type="bench1" draggable="true">
+        <img src="icons/bench1.png" alt="Bench 1">
+        Bench 1
+    </div>
+    <div class="furniture-item" data-type="dining1" draggable="true">
+        <img src="icons/dining1.png" alt="Dining 1">
+        Dining 1
+    </div>
+    <div class="furniture-item" data-type="dining2" draggable="true">
+        <img src="icons/dining2.png" alt="Dining 2">
+        Dining 2
+    </div>
+    <div class="furniture-item" data-type="dining3" draggable="true">
+        <img src="icons/dining3.png" alt="Dining 3">
+        Dining 3
+    </div>
+    <div class="furniture-item" data-type="table1" draggable="true">
+        <img src="icons/table1.png" alt="Table 1">
+        Table 1
+    </div>
+    <div class="furniture-item" data-type="table2" draggable="true">
+        <img src="icons/table2.png" alt="Table 2">
+        Table 2
+    </div>
+    <div class="furniture-item" data-type="wardrobe1" draggable="true">
+        <img src="icons/wardrobe1.png" alt="Wardrobe 1">
+        Wardrobe 1
+    </div>
+    <div class="furniture-item" data-type="furniture1" draggable="true">
+        <img src="icons/furniture1.png" alt="Furniture 1">
+        Furniture 1
+    </div>
+    <div class="furniture-item" data-type="furniture2" draggable="true">
+        <img src="icons/furniture2.png" alt="Furniture 2">
+        Furniture 2
+    </div>
+    <div class="furniture-item" data-type="furniture3" draggable="true">
+        <img src="icons/furniture3.png" alt="Furniture 3">
+        Furniture 3
+    </div>
+    <div class="furniture-item" data-type="furniture4" draggable="true">
+        <img src="icons/furniture4.png" alt="Furniture 4">
+        Furniture 4
+    </div>
+    <div class="furniture-item" data-type="furniture5" draggable="true">
+        <img src="icons/furniture5.png" alt="Furniture 5">
+        Furniture 5
+    </div>
+</div>
+<div class="toolbar">
+    <h2>Recommendation</h2>
+    <input type="number" id="budgetInput" placeholder="Enter your budget">
+    <button id="suggestButton">Suggest</button>
+    <p id="recommendation-results"></p>
+    <div id="recommendation-results"></div>
+    <!-- Load Three.js -->
+    <script src="three.js"></script>
+
+    <!-- Load Recommendation System -->
+    <script src="recommend.js"></script>
+
+    <!-- Load Three.js Main Logic -->
+    <script src="main.js"></script>
+</div>
+
+<script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.157.0/build/three.module.js",
+            "three/examples/jsm/controls/OrbitControls": "https://unpkg.com/three@0.157.0/examples/jsm/controls/OrbitControls.js",
+            "three/examples/jsm/loaders/GLTFLoader": "https://unpkg.com/three@0.157.0/examples/jsm/loaders/GLTFLoader.js",
+            "three/examples/jsm/controls/PointerLockControls": "https://unpkg.com/three@0.157.0/examples/jsm/controls/PointerLockControls.js"
+        }
+    }
+</script>
+<script type="module" src="main.js"></script>
+</body>
+</html>
